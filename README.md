@@ -1,6 +1,6 @@
 # US Housing Price Dashboard
 
-**🔗 Live demo: https://tradernish.github.io/nj-housing-dashboard/**
+**🔗 Live demo: https://tradernish.github.io/us-housing-dashboard/**
 
 A single-page dashboard of Zillow ZHVI home values for **every US zip code**
 (~26,000 zips across 51 states/DC), with 1mo / 3mo / 6mo / 1yr / 3yr / 5yr price
@@ -10,8 +10,8 @@ switch it to any state or "All states". No backend — open `index.html` in a br
 
 ![dashboard](https://img.shields.io/badge/data-Zillow%20ZHVI-blue)
 
-> The repo is named `nj-housing-dashboard` for historical reasons (it started as
-> NJ-only); it now covers the whole US.
+> This started as an NJ-only dashboard; it now covers the whole US. The state
+> filter defaults to NJ for that reason.
 
 ## Features
 
