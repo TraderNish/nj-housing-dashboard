@@ -12,6 +12,15 @@
   header { background: var(--head); color: #fff; padding: 14px 18px; }
   header h1 { margin: 0; font-size: 17px; }
   header .sub { color: #aeb6c2; font-size: 12px; margin-top: 3px; }
+  .summary { display: flex; flex-wrap: wrap; gap: 12px; padding: 12px 18px;
+             background: #fff; border-bottom: 1px solid var(--border); }
+  .stat { background: #f4f6f9; border: 1px solid var(--border); border-radius: 8px;
+          padding: 7px 14px; min-width: 140px; }
+  .stat .k { font-size: 11px; color: var(--muted); text-transform: uppercase;
+             letter-spacing: .03em; }
+  .stat .v { font-size: 20px; font-weight: 600; font-variant-numeric: tabular-nums;
+             margin-top: 2px; }
+  .stat .v.pos { color: #1a7f37; }  .stat .v.neg { color: #c62828; }
   .controls { display: flex; flex-wrap: wrap; gap: 18px; align-items: flex-end;
               padding: 12px 18px; background: #fff; border-bottom: 1px solid var(--border);
               position: sticky; top: 0; z-index: 5; }
@@ -55,6 +64,8 @@
   <h1>US Housing Prices — Zillow ZHVI by Zip Code</h1>
   <div class="sub" id="subtitle">loading…</div>
 </header>
+
+<div class="summary" id="summary"></div>
 
 <div class="controls">
   <div class="ctrl">
@@ -248,6 +259,28 @@ document.getElementById("toggleM").onclick = e=>{
   e.target.textContent = showMonthly ? "Hide monthly columns ▾" : "Show 60 monthly columns ▸";
   render();
 };
+// ---- national summary (all US, computed once) ----
+function median(vals){
+  const a = vals.filter(v => v != null).slice().sort((x,y)=>x-y);
+  if (!a.length) return null;
+  const m = a.length >> 1;
+  return a.length % 2 ? a[m] : (a[m-1] + a[m]) / 2;
+}
+(function buildSummary(){
+  const medPrice = median(D.rows.map(r=>r.latest));
+  const medY1 = median(D.rows.map(r=>r.changes.y1));
+  const medY5 = median(D.rows.map(r=>r.changes.y5));
+  const cls = v => v == null ? "" : (v >= 0 ? "pos" : "neg");
+  const card = (k, v, c="") => `<div class="stat"><div class="k">${k}</div>`
+    + `<div class="v ${c}">${v}</div></div>`;
+  document.getElementById("summary").innerHTML =
+      card("National median price", fmtUSD(Math.round(medPrice)))
+    + card("Median 1-yr change", fmtPct(medY1), cls(medY1))
+    + card("Median 5-yr change", fmtPct(medY5), cls(medY5))
+    + card("Zips covered", D.count.toLocaleString())
+    + card("States", D.states.length);
+})();
+
 document.getElementById("subtitle").textContent =
   `${D.count.toLocaleString()} zips · ${D.states.length} states · `
   + `${D.monthCols.length} months (${D.monthCols[0].slice(0,7)} → `

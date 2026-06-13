@@ -15,6 +15,8 @@ switch it to any state or "All states". No backend — open `index.html` in a br
 
 ## Features
 
+- National summary strip at the top: median home price, median 1-yr and 5-yr change,
+  and total zips/states covered (all-US figures, independent of the active filters).
 - One row per zip: zip, city, county, state, latest price, 6 change columns, 60 monthly
   columns (collapsible / horizontally scrollable).
 - Click any column header to sort ascending / descending.

@@ -32,7 +32,20 @@ const njCount = D.rows.filter(r => r.state === "NJ").length;
 const setVal = (id, v) => { const e = doc.getElementById(id); e.value = v;
   e.dispatchEvent(new window.Event("input")); };
 
+// independent median for cross-check
+const med = arr => { const a = arr.filter(v=>v!=null).slice().sort((x,y)=>x-y);
+  const m = a.length>>1; return a.length%2 ? a[m] : (a[m-1]+a[m])/2; };
+
 check("no JS errors", errors.length === 0, errors.join(" | "));
+
+// national summary
+const stats = [...doc.querySelectorAll("#summary .stat .v")].map(e=>e.textContent.trim());
+const expMedPrice = "$" + Math.round(med(D.rows.map(r=>r.latest))).toLocaleString("en-US");
+check("summary shows national median price", stats[0] === expMedPrice,
+  `shown=${stats[0]} expected=${expMedPrice}`);
+check("summary is national (not NJ-filtered)", stats[3] === D.count.toLocaleString(),
+  `zips-covered shown=${stats[3]} expected=${D.count.toLocaleString()}`);
+
 check("defaults to NJ", doc.getElementById("stateSel").value === "NJ");
 check("initial view = NJ rows only", rowcount() === njCount,
   `rendered=${rowcount()} expected=${njCount}`);
