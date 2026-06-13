@@ -1,0 +1,9 @@
+# Raw Zillow download — 116 MB, exceeds GitHub's 100 MB limit. Regenerate via README.
+zhvi_zip.csv
+
+# Node deps (only needed to run the jsdom smoke test)
+node_modules/
+
+# Python
+__pycache__/
+*.pyc
