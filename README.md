@@ -1,21 +1,25 @@
-# NJ Housing Price Dashboard
+# US Housing Price Dashboard
 
 **🔗 Live demo: https://tradernish.github.io/nj-housing-dashboard/**
 
-A single-page dashboard of Zillow ZHVI home values for **every New Jersey zip code**
-(546 zips, 21 counties), with 1mo / 3mo / 6mo / 1yr / 3yr / 5yr price changes and the
-last 60 months of monthly values. No backend — open `index.html` in a browser
+A single-page dashboard of Zillow ZHVI home values for **every US zip code**
+(~26,000 zips across 51 states/DC), with 1mo / 3mo / 6mo / 1yr / 3yr / 5yr price
+changes and the last 60 months of monthly values. The state filter **defaults to NJ**;
+switch it to any state or "All states". No backend — open `index.html` in a browser
 (or use the live demo above).
 
 ![dashboard](https://img.shields.io/badge/data-Zillow%20ZHVI-blue)
 
+> The repo is named `nj-housing-dashboard` for historical reasons (it started as
+> NJ-only); it now covers the whole US.
+
 ## Features
 
-- One row per zip: zip, city, county, latest price, 6 change columns, 60 monthly columns
-  (collapsible / horizontally scrollable).
+- One row per zip: zip, city, county, state, latest price, 6 change columns, 60 monthly
+  columns (collapsible / horizontally scrollable).
 - Click any column header to sort ascending / descending.
-- Filters: zip/city text search, county dropdown, dual sliders on latest price and on
-  1-year change.
+- Filters: zip/city text search, **state dropdown (defaults to NJ)**, county dropdown
+  (scoped to the selected state), dual sliders on latest price and on 1-year change.
 - Change cells colored green (gain) / red (loss), intensity scaling with magnitude.
 - Live filtered row count.
 

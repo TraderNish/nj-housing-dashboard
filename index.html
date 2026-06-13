@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>NJ Housing Prices — Zillow ZHVI by Zip</title>
+<title>US Housing Prices — Zillow ZHVI by Zip</title>
 <style>
   :root { --border:#dcdfe4; --head:#1f2933; --muted:#667085; }
   * { box-sizing: border-box; }
@@ -52,7 +52,7 @@
 </head>
 <body>
 <header>
-  <h1>New Jersey Housing Prices — Zillow ZHVI by Zip Code</h1>
+  <h1>US Housing Prices — Zillow ZHVI by Zip Code</h1>
   <div class="sub" id="subtitle">loading…</div>
 </header>
 
@@ -60,6 +60,10 @@
   <div class="ctrl">
     <label>Search zip / city</label>
     <input type="text" id="q" placeholder="e.g. 07030 or Hoboken">
+  </div>
+  <div class="ctrl">
+    <label>State</label>
+    <select id="stateSel"><option value="">All states</option></select>
   </div>
   <div class="ctrl">
     <label>County</label>
@@ -106,13 +110,14 @@ const baseCols = [
   {key:"zip",    label:"Zip",    txt:true,  sticky:"c0", get:r=>r.zip},
   {key:"city",   label:"City",   txt:true,  sticky:"c1", get:r=>r.city||""},
   {key:"county", label:"County", txt:true,  sticky:"c2", get:r=>r.county||""},
+  {key:"state",  label:"State",  txt:true,  get:r=>r.state||""},
   {key:"latest", label:"Latest", num:true,  get:r=>r.latest, fmt:fmtUSD},
 ];
 CHG.forEach(([k,lbl]) => baseCols.push(
   {key:k, label:lbl, num:true, chg:true, get:r=>r.changes[k], fmt:fmtPct}));
-const monthCols = D.monthCols.map(m => ({
+const monthCols = D.monthCols.map((m, i) => ({
   key:m, label:m.slice(0,7), num:true, monthly:true,
-  get:r=>r.months[m], fmt:fmtUSD}));
+  get:r=>r.months[i], fmt:fmtUSD}));
 
 let showMonthly = false;
 let sortKey = "latest", sortDesc = true;
@@ -139,9 +144,21 @@ function setupRange(minEl, maxEl, lo, hi, step){
 setupRange(priceMin, priceMax, P.lo, P.hi, 1000);
 setupRange(y1Min, y1Max, Y.lo, Y.hi, 0.1);
 
-// county dropdown
-[...new Set(D.rows.map(r=>r.county).filter(Boolean))].sort()
-  .forEach(c => county.add(new Option(c, c)));
+// state dropdown, default to NJ
+const stateSel = document.getElementById("stateSel");
+D.states.forEach(s => stateSel.add(new Option(s, s)));
+stateSel.value = D.defaultState && D.states.includes(D.defaultState) ? D.defaultState : "";
+
+// county dropdown depends on the selected state (counties repeat across states)
+function populateCounties(){
+  const st = stateSel.value;
+  const cs = [...new Set(D.rows
+    .filter(r => !st || r.state === st)
+    .map(r => r.county).filter(Boolean))].sort();
+  county.length = 1;                       // keep the "All counties" option
+  cs.forEach(c => county.add(new Option(c, c)));
+}
+populateCounties();
 
 // ---- build header ----
 function buildHead(){
@@ -168,6 +185,7 @@ function passes(r){
   const q = document.getElementById("q").value.trim().toLowerCase();
   if (q && !(r.zip.toLowerCase().includes(q) ||
              (r.city||"").toLowerCase().includes(q))) return false;
+  if (stateSel.value && r.state !== stateSel.value) return false;
   if (county.value && r.county !== county.value) return false;
   if (r.latest < +priceMin.value || r.latest > +priceMax.value) return false;
   const y1 = r.changes.y1;
@@ -223,13 +241,16 @@ function render(){
   const el = document.getElementById(id);
   el.addEventListener("input", render);
 });
+// changing state resets the county list to that state's counties
+stateSel.addEventListener("input", ()=>{ populateCounties(); county.value=""; render(); });
 document.getElementById("toggleM").onclick = e=>{
   showMonthly = !showMonthly;
   e.target.textContent = showMonthly ? "Hide monthly columns ▾" : "Show 60 monthly columns ▸";
   render();
 };
 document.getElementById("subtitle").textContent =
-  `${D.count} zips · ${D.monthCols.length} months (${D.monthCols[0].slice(0,7)} → `
+  `${D.count.toLocaleString()} zips · ${D.states.length} states · `
+  + `${D.monthCols.length} months (${D.monthCols[0].slice(0,7)} → `
   + `${D.latestMonth.slice(0,7)}) · source: Zillow ZHVI (smoothed, seasonally adjusted)`;
 
 render();
