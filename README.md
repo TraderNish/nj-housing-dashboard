@@ -1,8 +1,11 @@
 # NJ Housing Price Dashboard
 
+**🔗 Live demo: https://tradernish.github.io/nj-housing-dashboard/**
+
 A single-page dashboard of Zillow ZHVI home values for **every New Jersey zip code**
 (546 zips, 21 counties), with 1mo / 3mo / 6mo / 1yr / 3yr / 5yr price changes and the
-last 60 months of monthly values. No backend — open `index.html` in a browser.
+last 60 months of monthly values. No backend — open `index.html` in a browser
+(or use the live demo above).
 
 ![dashboard](https://img.shields.io/badge/data-Zillow%20ZHVI-blue)
 
